@@ -2,6 +2,7 @@ package com.kgp.noticatcher
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +23,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         initRecyclerView()
 
         checkPermission()
-
     }
 
     private fun initRecyclerView() {
@@ -38,9 +38,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
 
     private fun checkPermission() {
         if (!permissionGranted()) {
-            val intent = Intent(
-                "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
-            )
+            val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+
             startActivity(intent)
         }
     }
@@ -48,5 +47,11 @@ class MainActivity : AppCompatActivity(), KoinComponent {
     private fun permissionGranted(): Boolean {
         val sets = NotificationManagerCompat.getEnabledListenerPackages(this)
         return sets.contains(packageName)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        viewModel.clearUselessIcon()
     }
 }
